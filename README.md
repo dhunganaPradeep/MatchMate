@@ -184,4 +184,48 @@ The admin user is created on the first run via `RoleInitializer` in `IdentityCon
 - **Migration Errors**: Use `Update-Database -Verbose` or recreate the database and re-run migrations.
 - **Admin Login Fails**: Verify `AspNetUsers` table and reset password if needed.
 - **Build Errors**: Restore NuGet packages (`Tools > NuGet Package Manager > Restore NuGet Packages`).
+---
+
+## Contributions
+
+We welcome contributions to **MatchMate** to enhance its features, fix bugs, or improve the codebase! Here’s how you can contribute:
+
+- **Fork the Repository**:
+  - Click the "Fork" button on the [GitHub repository](https://github.com/dhunganaPradeep/MatchMate) to create your own copy.
+- **Clone Your Fork**:
+  - Run: 
+    ```bash
+    git clone https://github.com/<your-username>/MatchMate.git
+    ```
+  - Navigate to the project folder: `cd MatchMate`.
+- **Create a Branch**:
+  - Use a descriptive branch name for your changes:
+    ```bash
+    git checkout -b feature/your-feature-name
+    ```
+- **Make Changes**:
+  - Implement your feature, bug fix, or improvement in the codebase.
+  - Ensure your code follows the existing style and includes comments where necessary.
+- **Test Your Changes**:
+  - Build and run the application locally (see "Setup Instructions" above) to verify your changes work as expected.
+- **Commit and Push**:
+  - Commit your changes with a clear message:
+    ```bash
+    git add .
+    git commit -m "Add your descriptive commit message here"
+    ```
+  - Push to your fork:
+    ```bash
+    git push origin feature/your-feature-name
+    ```
+- **Submit a Pull Request**:
+  - Go to the original repository on GitHub and click "New Pull Request".
+  - Select your branch and provide a detailed description of your changes.
+  - Submit the PR for review.
+- **Respond to Feedback**:
+  - Address any comments or requested changes from the maintainers to get your contribution merged.
+
+Feel free to contribute ideas, report issues, or suggest enhancements via the [Issues tab](https://github.com/dhunganaPradeep/MatchMate/issues) as well!
+
+**Author**: Pradip Dhungana
 
