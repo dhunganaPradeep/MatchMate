@@ -195,7 +195,7 @@ We welcome contributions to **MatchMate** to enhance its features, fix bugs, or 
 - **Clone Your Fork**:
   - Run: 
     ```bash
-    git clone https://github.com/<your-username>/MatchMate.git
+    git clone https://github.com/dhunganaPradeep/MatchMate.git
     ```
   - Navigate to the project folder: `cd MatchMate`.
 - **Create a Branch**:
