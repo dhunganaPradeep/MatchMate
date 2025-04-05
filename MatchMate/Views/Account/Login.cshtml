@@ -1,0 +1,82 @@
+﻿@model MatchMate.Models.LoginViewModel
+
+@{
+    ViewBag.Title = "Log in to MatchMate";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        @if (ViewBag.AccountDeletedMessage != null)
+        {
+            <div class="col-md-6 col-lg-4 mb-3">
+                <div class="alert alert-info alert-dismissible fade show" role="alert">
+                    @ViewBag.AccountDeletedMessage
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            </div>
+        }
+
+        <div class="col-md-6 col-lg-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h2 class="card-title text-center mb-4">@ViewBag.Title</h2>
+                    @using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-signin" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+                        <div class="form-group mb-3">
+                            @Html.LabelFor(m => m.Email, new { @class = "form-label" })
+                            @Html.TextBoxFor(m => m.Email, new { @class = "form-control", placeholder = "Enter your email" })
+                            @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
+                        </div>
+
+                        <div class="form-group mb-3">
+                            @Html.LabelFor(m => m.Password, new { @class = "form-label" })
+                            <div class="input-group">
+                                @Html.PasswordFor(m => m.Password, new { @class = "form-control", placeholder = "Enter your password", id = "passwordField" })
+                                <span class="input-group-text">
+                                    <i class="fa fa-eye-slash" id="togglePassword" style="cursor: pointer"></i>
+                                </span>
+                            </div>
+                            @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
+                        </div>
+
+                        <div class="form-check mb-3">
+                            @Html.CheckBoxFor(m => m.RememberMe, new { @class = "form-check-input" })
+                            @Html.LabelFor(m => m.RememberMe, new { @class = "form-check-label" })
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100 mb-3">Log in</button>
+                    }
+
+                    <div class="text-center mt-3">
+                        <p><a href="@Url.Action("Register", "Account")" class="text-muted">Register as a new user</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const passwordField = document.getElementById('passwordField');
+            const togglePassword = document.getElementById('togglePassword');
+
+            togglePassword.addEventListener('mousedown', function() {
+                passwordField.type = 'text';
+                togglePassword.classList.remove('fa-eye-slash');
+                togglePassword.classList.add('fa-eye');
+            });
+
+            document.addEventListener('mouseup', function() {
+                passwordField.type = 'password';
+                togglePassword.classList.remove('fa-eye');
+                togglePassword.classList.add('fa-eye-slash');
+            });
+        });
+    </script>
+}

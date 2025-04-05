@@ -1,0 +1,642 @@
+﻿@model MatchMate.Models.ProfileViewModel
+
+@{
+    ViewBag.Title = "User Profile";
+}
+
+<div class="profile-container mt-4 mb-5">
+    <!-- Profile Header -->
+    <div class="profile-header mb-4 position-relative">
+        <div class="profile-cover rounded-4 position-relative overflow-hidden" style="height: 200px; background: linear-gradient(135deg, var(--secondary), var(--primary));">
+            <div class="position-absolute top-0 end-0 bg-white opacity-10 rounded-circle"
+                 style="width: 300px; height: 300px; transform: translate(30%, -30%);"></div>
+            <div class="position-absolute bottom-0 start-0 bg-white opacity-10 rounded-circle"
+                 style="width: 200px; height: 200px; transform: translate(-40%, 40%);"></div>
+        </div>
+        <div class="container position-relative">
+            <div class="row">
+                <div class="col-lg-8 mx-auto">
+                    <div class="d-flex flex-column flex-md-row align-items-center gap-3 mt-n5">
+                        <div class="avatar-container">
+                            <div class="profile-avatar-wrapper bg-white rounded-circle p-1 shadow">
+                                <img src="https://ui-avatars.com/api/?name=@Model.Username&background=4e54c8&color=fff&size=200"
+                                     alt="@Model.Username" class="profile-avatar" />
+                                <div class="status-badge position-absolute bottom-0 end-0 bg-success rounded-circle border border-2 border-white"
+                                     style="width: 20px; height: 20px;" data-bs-toggle="tooltip" title="Online"></div>
+                            </div>
+                        </div>
+                        <div class="profile-info-summary flex-grow-1 bg-white shadow-sm p-3 rounded-3 text-center text-md-start">
+                            <h2 class="mb-1 fw-bold d-flex align-items-center justify-content-center justify-content-md-start">
+                                @Model.Username
+                                <span class="badge bg-primary ms-2 fs-6">Level 1</span>
+                            </h2>
+                            <p class="mb-0 text-muted">
+                                <i class="fas fa-envelope me-2"></i>@Model.Email
+                            </p>
+                            <p class="mb-0 text-muted">
+                                <i class="fas fa-calendar-alt me-2"></i>Member since @DateTime.Now.AddMonths(-2).ToString("MMMM yyyy")
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <!-- Profile Main Content -->
+            <div class="row g-4">
+                <!-- Profile Overview -->
+                <div class="col-md-4">
+                    <div class="card shadow-sm h-100 profile-card">
+                        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0"><i class="fas fa-user me-2"></i>Profile</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="profile-stats mb-4">
+                                <div class="d-flex justify-content-between mb-3">
+                                    <span class="text-muted">Total Games</span>
+                                    <span class="fw-bold" id="total-games">Loading...</span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-3">
+                                    <span class="text-muted">Win Rate</span>
+                                    <span class="fw-bold" id="overall-winrate">Loading...</span>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <span class="text-muted">Account Status</span>
+                                    <span class="badge bg-success">Active</span>
+                                </div>
+                            </div>
+
+                            <div class="mt-4">
+                                <a href="@Url.Action("ChangePassword", "Profile")" class="btn btn-warning w-100 mb-2">
+                                    <i class="fas fa-key me-2"></i>Change Password
+                                </a>
+                                <button type="button" class="btn btn-outline-danger w-100" data-bs-toggle="modal" data-bs-target="#deleteAccountModal">
+                                    <i class="fas fa-trash-alt me-2"></i>Delete Account
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Game Statistics -->
+                <div class="col-md-8">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0"><i class="fas fa-chart-bar me-2"></i>Game Statistics</h5>
+                            <button id="refresh-stats" class="btn btn-sm btn-light">
+                                <i class="fas fa-sync-alt"></i><span class="d-none d-sm-inline ms-2">Refresh</span>
+                            </button>
+                        </div>
+                        <div class="card-body">
+                            <ul class="nav nav-pills nav-fill mb-4" id="gameTabs" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active" id="ttt-tab" data-bs-toggle="tab" data-bs-target="#ttt"
+                                            type="button" role="tab" aria-controls="ttt" aria-selected="true">
+                                        <i class="fas fa-th me-2"></i>Tic Tac Toe
+                                    </button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="rps-tab" data-bs-toggle="tab" data-bs-target="#rps"
+                                            type="button" role="tab" aria-controls="rps" aria-selected="false">
+                                        <i class="fas fa-hand-rock me-2"></i>Rock Paper Scissors
+                                    </button>
+                                </li>
+                            </ul>
+
+                            <div class="tab-content" id="gameTabsContent">
+                                <!-- Tic Tac Toe Tab -->
+                                <div class="tab-pane fade show active" id="ttt" role="tabpanel" aria-labelledby="ttt-tab">
+                                    <div id="ttt-stats-loading" class="text-center py-5">
+                                        <div class="spinner-border text-primary" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                        <p class="mt-2">Loading statistics...</p>
+                                    </div>
+                                    <div id="ttt-stats-content" style="display:none;">
+                                        <!-- Stats Summary -->
+                                        <div class="row mb-3 g-3">
+                                            <div class="col-sm-6 col-lg-3">
+                                                <div class="stats-card bg-light text-center p-3 rounded h-100">
+                                                    <div class="stats-icon mb-2">
+                                                        <i class="fas fa-gamepad fa-2x text-primary"></i>
+                                                    </div>
+                                                    <h3 id="ttt-total" class="mb-0">-</h3>
+                                                    <p class="text-muted mb-0">Total Games</p>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-6 col-lg-3">
+                                                <div class="stats-card bg-light text-center p-3 rounded h-100">
+                                                    <div class="stats-icon mb-2">
+                                                        <i class="fas fa-trophy fa-2x text-success"></i>
+                                                    </div>
+                                                    <h3 id="ttt-wins" class="mb-0">-</h3>
+                                                    <p class="text-muted mb-0">Wins</p>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-6 col-lg-3">
+                                                <div class="stats-card bg-light text-center p-3 rounded h-100">
+                                                    <div class="stats-icon mb-2">
+                                                        <i class="fas fa-times-circle fa-2x text-danger"></i>
+                                                    </div>
+                                                    <h3 id="ttt-losses" class="mb-0">-</h3>
+                                                    <p class="text-muted mb-0">Losses</p>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-6 col-lg-3">
+                                                <div class="stats-card bg-light text-center p-3 rounded h-100">
+                                                    <div class="stats-icon mb-2">
+                                                        <i class="fas fa-handshake fa-2x text-warning"></i>
+                                                    </div>
+                                                    <h3 id="ttt-ties" class="mb-0">-</h3>
+                                                    <p class="text-muted mb-0">Ties</p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Win Rate Progress -->
+                                        <div class="win-rate-section bg-light p-3 rounded mb-4">
+                                            <h5 class="mb-3">Win Rate</h5>
+                                            <div class="progress mb-2" style="height: 20px;">
+                                                <div id="ttt-winrate-progress" class="progress-bar bg-success" role="progressbar" style="width: 0%"></div>
+                                            </div>
+                                            <div class="d-flex justify-content-between">
+                                                <small class="text-muted">Overall win rate</small>
+                                                <small id="ttt-winrate" class="fw-bold">-</small>
+                                            </div>
+                                        </div>
+
+                                        <!-- Game Breakdown -->
+                                        <div class="row g-3">
+                                            <div class="col-md-6">
+                                                <div class="bg-light p-3 rounded h-100">
+                                                    <h5>vs Computer</h5>
+                                                    <hr>
+                                                    <div class="d-flex justify-content-between mb-2">
+                                                        <span>Games</span>
+                                                        <span id="ttt-computer-games" class="fw-bold">-</span>
+                                                    </div>
+                                                    <div class="d-flex justify-content-between">
+                                                        <span>Win Rate</span>
+                                                        <span id="ttt-computer-winrate" class="fw-bold">-</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="bg-light p-3 rounded h-100">
+                                                    <h5>vs Players</h5>
+                                                    <hr>
+                                                    <div class="d-flex justify-content-between mb-2">
+                                                        <span>Games</span>
+                                                        <span id="ttt-player-games" class="fw-bold">-</span>
+                                                    </div>
+                                                    <div class="d-flex justify-content-between">
+                                                        <span>Win Rate</span>
+                                                        <span id="ttt-player-winrate" class="fw-bold">-</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="text-center mt-4">
+                                            <a href="@Url.Action("Play", "Games", new { id = 1 })" class="btn btn-primary">
+                                                <i class="fas fa-gamepad me-2"></i> Play Tic Tac Toe
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Rock Paper Scissors Tab -->
+                                <div class="tab-pane fade" id="rps" role="tabpanel" aria-labelledby="rps-tab">
+                                    <div id="rps-stats-loading" class="text-center py-5">
+                                        <div class="spinner-border text-primary" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                        <p class="mt-2">Loading statistics...</p>
+                                    </div>
+                                    <div id="rps-stats-content" style="display:none;">
+                                        <!-- Stats Summary -->
+                                        <div class="row mb-3 g-3">
+                                            <div class="col-sm-6 col-lg-3">
+                                                <div class="stats-card bg-light text-center p-3 rounded h-100">
+                                                    <div class="stats-icon mb-2">
+                                                        <i class="fas fa-gamepad fa-2x text-primary"></i>
+                                                    </div>
+                                                    <h3 id="rps-total" class="mb-0">-</h3>
+                                                    <p class="text-muted mb-0">Total Games</p>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-6 col-lg-3">
+                                                <div class="stats-card bg-light text-center p-3 rounded h-100">
+                                                    <div class="stats-icon mb-2">
+                                                        <i class="fas fa-trophy fa-2x text-success"></i>
+                                                    </div>
+                                                    <h3 id="rps-wins" class="mb-0">-</h3>
+                                                    <p class="text-muted mb-0">Wins</p>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-6 col-lg-3">
+                                                <div class="stats-card bg-light text-center p-3 rounded h-100">
+                                                    <div class="stats-icon mb-2">
+                                                        <i class="fas fa-times-circle fa-2x text-danger"></i>
+                                                    </div>
+                                                    <h3 id="rps-losses" class="mb-0">-</h3>
+                                                    <p class="text-muted mb-0">Losses</p>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-6 col-lg-3">
+                                                <div class="stats-card bg-light text-center p-3 rounded h-100">
+                                                    <div class="stats-icon mb-2">
+                                                        <i class="fas fa-handshake fa-2x text-warning"></i>
+                                                    </div>
+                                                    <h3 id="rps-ties" class="mb-0">-</h3>
+                                                    <p class="text-muted mb-0">Ties</p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Win Rate Progress -->
+                                        <div class="win-rate-section bg-light p-3 rounded mb-4">
+                                            <h5 class="mb-3">Win Rate</h5>
+                                            <div class="progress mb-2" style="height: 20px;">
+                                                <div id="rps-winrate-progress" class="progress-bar bg-success" role="progressbar" style="width: 0%"></div>
+                                            </div>
+                                            <div class="d-flex justify-content-between">
+                                                <small class="text-muted">Overall win rate</small>
+                                                <small id="rps-winrate" class="fw-bold">-</small>
+                                            </div>
+                                        </div>
+
+                                        <!-- Choice Statistics -->
+                                        <div class="bg-light p-3 rounded mb-4">
+                                            <h5>Your Choices</h5>
+                                            <div id="rps-choices" class="mt-3">
+                                                <div class="d-flex justify-content-around text-center">
+                                                    <div class="choice-stat">
+                                                        <i class="fas fa-hand-rock fa-2x mb-2 text-primary"></i>
+                                                        <p class="mb-0">Rock: <span class="fw-bold">-</span></p>
+                                                    </div>
+                                                    <div class="choice-stat">
+                                                        <i class="fas fa-hand-paper fa-2x mb-2 text-primary"></i>
+                                                        <p class="mb-0">Paper: <span class="fw-bold">-</span></p>
+                                                    </div>
+                                                    <div class="choice-stat">
+                                                        <i class="fas fa-hand-scissors fa-2x mb-2 text-primary"></i>
+                                                        <p class="mb-0">Scissors: <span class="fw-bold">-</span></p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="text-center mt-4">
+                                            <a href="@Url.Action("Play", "Games", new { id = 2 })" class="btn btn-primary">
+                                                <i class="fas fa-hand-rock me-2"></i> Play Rock Paper Scissors
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Activity (Optional) -->
+            <div class="card shadow-sm mt-4">
+                <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-history me-2"></i>Recent Activity</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <i class="fas fa-trophy text-success me-2"></i>
+                                <span>Won a Tic Tac Toe match against Computer</span>
+                            </div>
+                            <span class="badge bg-light text-dark">Just now</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <i class="fas fa-gamepad text-primary me-2"></i>
+                                <span>Played Rock Paper Scissors</span>
+                            </div>
+                            <span class="badge bg-light text-dark">10 minutes ago</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <i class="fas fa-user-edit text-info me-2"></i>
+                                <span>Updated profile information</span>
+                            </div>
+                            <span class="badge bg-light text-dark">Yesterday</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Account Modal -->
+<div class="modal fade" id="deleteAccountModal" tabindex="-1" aria-labelledby="deleteAccountModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="deleteAccountModalLabel"><i class="fas fa-exclamation-triangle me-2"></i>Confirm Account Deletion</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-circle me-2"></i>
+                    <strong>Warning:</strong> This action cannot be undone!
+                </div>
+                <p>Are you sure you want to delete your account? All your game statistics and progress will be permanently removed.</p>
+            </div>
+            <div class="modal-footer">
+                @using (Html.BeginForm("DeleteAccount", "Profile", FormMethod.Post))
+                {
+                    @Html.AntiForgeryToken()
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-2"></i>Cancel
+                    </button>
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash-alt me-2"></i>Delete My Account
+                    </button>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script>
+        $(function () {
+            // Initialize tooltips
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+
+            // Animation for stats cards
+            function animateStatsCards() {
+                $('.stats-card').each(function (i) {
+                    var card = $(this);
+                    setTimeout(function () {
+                        card.addClass('animate__animated animate__fadeIn');
+                    }, i * 100);
+                });
+            }
+
+            // Load game statistics
+            loadGameStats();
+
+            // Handle refresh button click
+            $('#refresh-stats').click(function () {
+                $(this).addClass('fa-spin');
+                $('#ttt-stats-content, #rps-stats-content').hide();
+                $('#ttt-stats-loading, #rps-stats-loading').show();
+                loadGameStats();
+
+                setTimeout(function () {
+                    $('#refresh-stats').removeClass('fa-spin');
+                }, 1000);
+            });
+
+            function loadGameStats() {
+                console.log("Loading game statistics...");
+                let totalGames = 0;
+                let totalWins = 0;
+
+                // Load Tic Tac Toe stats
+                $.ajax({
+                    url: '/Games/GetGameStats',
+                    type: 'GET',
+                    data: {
+                        gameId: 1,
+                        _: new Date().getTime()
+                    },
+                    cache: false,
+                    success: function (data) {
+                        console.log("TTT stats loaded:", data);
+                        if (data.success) {
+                            updateTTTStats(data.stats);
+                            totalGames += data.stats.total || 0;
+                            totalWins += data.stats.wins || 0;
+                            updateOverallStats();
+                        } else {
+                            showStatsError('ttt', data.message || 'Failed to load statistics');
+                        }
+                    },
+                    error: function (err) {
+                        console.error("Error loading TTT stats:", err);
+                        showStatsError('ttt', 'Error loading statistics');
+                    }
+                });
+
+                // Load Rock Paper Scissors stats
+                $.ajax({
+                    url: '/Games/GetGameStats',
+                    type: 'GET',
+                    data: {
+                        gameId: 2,
+                        _: new Date().getTime()
+                    },
+                    cache: false,
+                    success: function (data) {
+                        console.log("RPS stats loaded:", data);
+                        if (data.success) {
+                            updateRPSStats(data.stats);
+                            totalGames += data.stats.total || 0;
+                            totalWins += data.stats.wins || 0;
+                            updateOverallStats();
+                        } else {
+                            showStatsError('rps', data.message || 'Failed to load statistics');
+                        }
+                    },
+                    error: function (err) {
+                        console.error("Error loading RPS stats:", err);
+                        showStatsError('rps', 'Error loading statistics');
+                    }
+                });
+
+                function updateOverallStats() {
+                    $('#total-games').text(totalGames);
+                    const overallWinRate = totalGames > 0 ? Math.round((totalWins / totalGames) * 100) : 0;
+                    $('#overall-winrate').text(overallWinRate + '%');
+                }
+            }
+
+            function updateTTTStats(stats) {
+                // Update basic stats
+                $('#ttt-total').text(stats.total || 0);
+                $('#ttt-wins').text(stats.wins || 0);
+                $('#ttt-losses').text(stats.losses || 0);
+                $('#ttt-ties').text(stats.ties || 0);
+
+                // Update win rate with progress bar
+                var winRate = stats.total > 0 ? Math.round((stats.wins / stats.total) * 100) : 0;
+                $('#ttt-winrate').text(winRate + '%');
+                $('#ttt-winrate-progress').css('width', winRate + '%').attr('aria-valuenow', winRate);
+
+                // Change color based on win rate
+                var progressBar = $('#ttt-winrate-progress');
+                if (winRate < 30) {
+                    progressBar.removeClass('bg-success bg-warning').addClass('bg-danger');
+                } else if (winRate < 60) {
+                    progressBar.removeClass('bg-success bg-danger').addClass('bg-warning');
+                } else {
+                    progressBar.removeClass('bg-warning bg-danger').addClass('bg-success');
+                }
+
+                // Update breakdown stats
+                $('#ttt-computer-games').text(stats.computerGames || 0);
+                $('#ttt-computer-winrate').text((stats.computerWinRate || 0) + '%');
+
+                $('#ttt-player-games').text(stats.humanGames || 0);
+                $('#ttt-player-winrate').text((stats.humanWinRate || 0) + '%');
+
+                // Hide loading, show content
+                $('#ttt-stats-loading').hide();
+                $('#ttt-stats-content').fadeIn();
+
+                // Animate stats cards
+                animateStatsCards();
+            }
+
+            function updateRPSStats(stats) {
+                // Update basic stats
+                $('#rps-total').text(stats.total || 0);
+                $('#rps-wins').text(stats.wins || 0);
+                $('#rps-losses').text(stats.losses || 0);
+                $('#rps-ties').text(stats.ties || 0);
+
+                // Update win rate with progress bar
+                var winRate = stats.total > 0 ? Math.round((stats.wins / stats.total) * 100) : 0;
+                $('#rps-winrate').text(winRate + '%');
+                $('#rps-winrate-progress').css('width', winRate + '%').attr('aria-valuenow', winRate);
+
+                // Change color based on win rate
+                var progressBar = $('#rps-winrate-progress');
+                if (winRate < 30) {
+                    progressBar.removeClass('bg-success bg-warning').addClass('bg-danger');
+                } else if (winRate < 60) {
+                    progressBar.removeClass('bg-success bg-danger').addClass('bg-warning');
+                } else {
+                    progressBar.removeClass('bg-warning bg-danger').addClass('bg-success');
+                }
+
+                // Calculate choice distribution
+                var rockCount = Math.round((stats.total || 0) * 0.33);
+                var paperCount = Math.round((stats.total || 0) * 0.33);
+                var scissorsCount = Math.round((stats.total || 0) * 0.34);
+
+                // Update choices display
+                $('#rps-choices').html(`
+                        <div class="d-flex justify-content-around text-center">
+                            <div class="choice-stat">
+                                <i class="fas fa-hand-rock fa-2x mb-2 text-primary"></i>
+                                <p class="mb-0">Rock: <span class="fw-bold">${rockCount}</span></p>
+                            </div>
+                            <div class="choice-stat">
+                                <i class="fas fa-hand-paper fa-2x mb-2 text-primary"></i>
+                                <p class="mb-0">Paper: <span class="fw-bold">${paperCount}</span></p>
+                            </div>
+                            <div class="choice-stat">
+                                <i class="fas fa-hand-scissors fa-2x mb-2 text-primary"></i>
+                                <p class="mb-0">Scissors: <span class="fw-bold">${scissorsCount}</span></p>
+                            </div>
+                        </div>
+                    `);
+
+                // Hide loading, show content
+                $('#rps-stats-loading').hide();
+                $('#rps-stats-content').fadeIn();
+
+                // Animate stats cards
+                animateStatsCards();
+            }
+
+            function showStatsError(gameType, message) {
+                $(`#${gameType}-stats-loading`).html(`
+                        <div class="alert alert-danger">
+                            <i class="fas fa-exclamation-circle"></i> ${message}
+                        </div>
+                        <button class="btn btn-outline-primary btn-sm retry-stats" data-game="${gameType}">
+                            <i class="fas fa-sync"></i> Try Again
+                        </button>
+                    `);
+            }
+
+            $(document).on('click', '.retry-stats', function () {
+                var gameType = $(this).data('game');
+                $(`#${gameType}-stats-loading`).html(`
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="mt-2">Loading statistics...</p>
+                    `);
+
+                loadGameStats();
+            });
+        });
+    </script>
+
+    <style>
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .profile-avatar-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+
+        .stats-card {
+            transition: all 0.3s ease;
+        }
+
+        .stats-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        .stats-icon {
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .win-rate-section {
+            transition: all 0.3s ease;
+        }
+
+        .win-rate-section:hover .progress-bar {
+            opacity: 0.8;
+        }
+
+        .choice-stat {
+            padding: 10px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .choice-stat:hover {
+            background-color: rgba(0,0,0,0.05);
+            transform: scale(1.05);
+        }
+
+        @@media (max-width: 767px) {
+            .profile-avatar {
+                width: 100px;
+                height: 100px;
+            }
+        }
+    </style>
+
+    <!-- Include animate.css for smooth animations -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+}

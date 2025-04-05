@@ -1,0 +1,972 @@
+﻿@using Microsoft.AspNet.Identity
+@{
+    ViewBag.Title = "Play " + ViewBag.GameName;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var userId = User.Identity.GetUserId();
+}
+
+<div class="container game-container mt-4">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="mb-0">@ViewBag.GameName</h2>
+                </div>
+                <div id="game-name" style="display:none;">@ViewBag.GameName</div>
+                <input type="hidden" id="game-id" value="@ViewBag.GameId" />
+                <input type="hidden" name="user-id" value="@User.Identity.GetUserId()" />
+                <div class="card-body">
+                    @if (ViewBag.GameName == "Tic-Tac-Toe")
+                    {
+                        <div class="game-status mb-3">
+                            <div class="alert alert-info" id="game-status-message">
+                                Waiting for opponent...
+                            </div>
+                        </div>
+
+                        <div id="tic-tac-toe-board" class="mx-auto mb-3" style="display: grid; grid-template-columns: repeat(3, 100px); gap: 5px; width: 315px;">
+                            @for (int i = 0; i < 9; i++)
+                            {
+                                <button class="btn btn-outline-secondary game-cell" style="width: 100px; height: 100px; font-size: 2rem;" data-index="@i" onclick="makeMove(@i)"> </button>
+                            }
+                        </div>
+
+                        <div id="player-info" class="mt-3">
+                            <p>Playing as: <span class="badge bg-primary" id="my-symbol"></span></p>
+                            <p>Playing against: <span id="opponent-name">Waiting...</span></p>
+                            <p>Current turn: <span id="current-turn"></span></p>
+                        </div>
+
+                        <div id="game-result" class="mt-3"></div>
+
+                        <div class="game-controls mt-4">
+                            <button id="play-again-btn" class="btn btn-success me-2" style="display: none;">Play Again</button>
+                            <button id="exit-game-btn" class="btn btn-warning">Exit Game</button>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="card">
+                                <div class="card-header bg-info text-white">
+                                    <h4 class="mb-0">Your Game Stats</h4>
+                                </div>
+                                <div class="card-body">
+                                    <div id="game-stats">
+                                        <div class="spinner-border text-primary" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                        <p>Loading stats...</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    else if (ViewBag.GameName == "Rock-Paper-Scissors")
+                    {
+                        <div class="text-center rps-game-container">
+                            <h2 class="mb-4">Rock Paper Scissors</h2>
+
+                            <div class="game-choice-section mb-5">
+                                <h3 class="mb-3">Make your choice:</h3>
+                                <div class="d-flex justify-content-center gap-4 my-4">
+                                    <button class="btn btn-outline-primary p-4 game-choice-btn" onclick="playRPS('Rock')">
+                                        <i class="fas fa-hand-rock fa-4x mb-2"></i><br>Rock
+                                    </button>
+                                    <button class="btn btn-outline-primary p-4 game-choice-btn" onclick="playRPS('Paper')">
+                                        <i class="fas fa-hand-paper fa-4x mb-2"></i><br>Paper
+                                    </button>
+                                    <button class="btn btn-outline-primary p-4 game-choice-btn" onclick="playRPS('Scissors')">
+                                        <i class="fas fa-hand-scissors fa-4x mb-2"></i><br>Scissors
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div id="rps-result" class="my-4 result-display"></div>
+
+                            <div class="row mt-5">
+                                <div class="col-md-6">
+                                    <div id="rps-stats" class="stats-card p-3 mb-4">
+                                        <h4 class="mb-3">Your Session Stats</h4>
+                                        <table class="table table-striped">
+                                            <tr>
+                                                <td>Games Played</td>
+                                                <td id="rps-games">0</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Wins</td>
+                                                <td id="rps-wins">0</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Losses</td>
+                                                <td id="rps-losses">0</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Ties</td>
+                                                <td id="rps-ties">0</td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div id="game-stats" class="stats-card p-3 mb-4">
+                                        <!-- Will be populated by JavaScript with loading state -->
+                                        <h5>Rock Paper Scissors Stats</h5>
+                                        <div class="text-center p-3">
+                                            <div class="spinner-border text-primary" role="status">
+                                                <span class="visually-hidden">Loading...</span>
+                                            </div>
+                                            <p class="mt-2">Loading stats...</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mt-4">
+                                <a href="/Games/Index" class="btn btn-warning btn-lg">Exit Game</a>
+                            </div>
+                        </div>
+
+                        <div id="customModalOverlay" class="custom-modal-overlay">
+                            <div class="custom-modal">
+                                <div class="custom-modal-header">
+                                    <h5 class="custom-modal-title">Game Result</h5>
+                                    <button type="button" class="custom-close-button" id="customModalClose">&times;</button>
+                                </div>
+                                <div class="custom-modal-body" id="customModalContent">
+                                </div>
+                                <div class="custom-modal-footer">
+                                    <button type="button" class="btn btn-secondary" id="rpsExitModalBtn">Exit to Games</button>
+                                    <button type="button" class="btn btn-primary" id="rpsPlayAgainModalBtn">Play Again</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="rpsPlayAgainModal" style="display: none;"></div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="playAgainModal" tabindex="-1" aria-labelledby="playAgainModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="playAgainModalLabel">Game Over</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="playAgainModalBody">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="exitModalBtn">Exit to Games</button>
+                    <button type="button" class="btn btn-primary" id="playAgainModalBtn">Play Again</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script src="~/Scripts/jquery.signalR-2.4.3.min.js"></script>
+    <script src="~/signalr/hubs"></script>
+    <script type="text/javascript">
+        function disableBoardDuringWaiting() {
+            console.log("Disabling board during waiting period");
+            $('.game-cell').prop('disabled', true);
+
+            if ($('#waiting-overlay').length === 0) {
+                $('#tic-tac-toe-board').append(
+                    `<div id="waiting-overlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+                    background-color: rgba(0,0,0,0.2); display: flex; justify-content: center;
+                    align-items: center; border-radius: 5px; z-index: 100;">
+                        <div class="bg-white p-3 rounded shadow text-center">
+                            <div class="spinner-border text-primary mb-2" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p class="mb-0">Waiting for opponent...</p>
+                        </div>
+                    </div>`
+                );
+                $('#tic-tac-toe-board').css('position', 'relative');
+            }
+        }
+
+        function enableBoard() {
+            console.log("Enabling game board");
+            $('.game-cell').prop('disabled', false);
+            $('#waiting-overlay').fadeOut(300, function () {
+                $(this).remove();
+            });
+        }
+
+        $(function () {
+            if ('@ViewBag.GameName' == 'Tic-Tac-Toe') {
+                disableBoardDuringWaiting();
+                console.log("Game initialization started");
+
+                var userId = "@User.Identity.GetUserId()";
+                var gameId = "@ViewBag.GameId";
+                var mySymbol = null;
+                var currentPlayer = null;
+                var board = Array(9).fill(' ');
+                var opponentId = null;
+                var gameOver = false;
+                var isComputerOpponent = false;
+
+                loadGameStats();
+
+                window.makeMove = function (index) {
+                    console.log("Move attempted at index " + index);
+                    if (board[index] === ' ' && currentPlayer === mySymbol && !gameOver) {
+                        if (isComputerOpponent) {
+                            board[index] = mySymbol;
+                            let button = $(`button[data-index="${index}"]`);
+                            button.text(mySymbol);
+                            button.prop('disabled', true);
+                            button.addClass(mySymbol === 'X' ? 'x-mark' : 'o-mark');
+
+                            checkWinner();
+                            if (!gameOver) {
+                                currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+                                updateCurrentTurnDisplay();
+                                setTimeout(computerMove, 1000);
+                            }
+                        } else if ($.connection && $.connection.gameHub) {
+                            $.connection.gameHub.server.makeMove(gameId, index, mySymbol)
+                                .fail(function (err) {
+                                    console.error("Error sending move:", err);
+                                });
+                        }
+                    }
+                };
+
+                if (typeof $.connection !== 'undefined' && $.connection.gameHub) {
+                    console.log("SignalR library detected");
+                    var gameHub = $.connection.gameHub;
+
+                    if (gameHub) {
+                        console.log("Game hub found, setting up handlers");
+
+                        gameHub.client.waitingForOpponent = function () {
+                            console.log("Waiting for opponent");
+                            $('#game-status-message').text("Waiting for an opponent...");
+                            $('#opponent-name').text("Waiting...");
+                            disableBoardDuringWaiting();
+
+                            setTimeout(function () {
+                                if (!opponentId) {
+                                    console.log("No opponent joined, switching to computer");
+                                    setupComputerOpponent();
+                                }
+                            }, 15000);
+                        };
+
+                        function getOpponentName(playerId, attempts = 3) {
+                            console.log("Fetching opponent name, attempts left:", attempts);
+                            $.ajax({
+                                url: '/Games/GetUsername',
+                                type: 'GET',
+                                data: { playerId: playerId },
+                                success: function (data) {
+                                    if (data && data.username) {
+                                        console.log("Got opponent name:", data.username);
+                                        $('#opponent-name').html(`<i class="fas fa-user"></i> ${data.username}`);
+                                    } else if (attempts > 0) {
+                                        setTimeout(() => getOpponentName(playerId, attempts - 1), 1000);
+                                    }
+                                },
+                                error: function (err) {
+                                    console.error("Error fetching username:", err);
+                                    if (attempts > 0) {
+                                        setTimeout(() => getOpponentName(playerId, attempts - 1), 1000);
+                                    }
+                                }
+                            });
+                        }
+
+                        gameHub.client.playerJoined = function (playerId) {
+                            console.log("Player joined:", playerId);
+                            console.log("Current user ID:", userId);
+
+                            if (playerId === userId) {
+                                if (!mySymbol) {
+                                    mySymbol = 'X';
+                                    $('#my-symbol').text('X');
+                                    console.log("Setting as player 1 (X)");
+                                }
+                            } else {
+                                opponentId = playerId;
+                                getOpponentName(playerId);
+                                if (!mySymbol) {
+                                    mySymbol = 'O';
+                                    $('#my-symbol').text('O');
+                                    console.log("Setting as player 2 (O)");
+                                }
+                                $('#game-status-message').text("Game in progress. X goes first.");
+                                enableBoard();
+                            }
+
+                            if (currentPlayer === null) {
+                                currentPlayer = 'X';
+                                updateCurrentTurnDisplay();
+                            }
+                        };
+
+                        // First set a temporary name while we fetch the real one
+                        $('#opponent-name').html('<i class="fas fa-user"></i> Opponent');
+                        $('#game-status-message').text("Game in progress. X goes first.");
+
+                        gameHub.client.receiveMove = function (index, symbol) {
+                            console.log(`Received move: ${symbol} at ${index}`);
+                            if (board[index] === ' ') {
+                                board[index] = symbol;
+                                let button = $(`button[data-index="${index}"]`);
+                                button.text(symbol);
+                                button.prop('disabled', true);
+                                button.addClass(symbol === 'X' ? 'x-mark' : 'o-mark');
+                                checkWinner();
+                                if (!gameOver) {
+                                    currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+                                    updateCurrentTurnDisplay();
+                                }
+                            } else {
+                                console.warn(`Invalid move received: cell ${index} already marked.`);
+                            }
+                        };
+
+                        gameHub.client.gameOver = function (winnerId) {
+                            gameOver = true;
+
+                            let winnerSymbol = null;
+                            if (winnerId) {
+                                winnerSymbol = (winnerId === userId) ? mySymbol : (mySymbol === 'X' ? 'O' : 'X');
+                            }
+
+                            updateGameStatus(winnerSymbol);
+                            $('#play-again-btn').show();
+                        };
+
+                        gameHub.client.opponentLeft = function (playerId) {
+                            console.log("Opponent left the game:", playerId);
+
+                            $('#game-status-message').removeClass('alert-info alert-success alert-danger')
+                                .addClass('alert-warning')
+                                .text("Your opponent has left the game.");
+
+                            $('#game-result').html(`
+                            <div class="alert alert-warning">
+                                <h4>Opponent Left</h4>
+                                <p>Your opponent has disconnected from the game.</p>
+                            </div>`);
+
+                            $('.game-cell').prop('disabled', true);
+                            $('#play-again-btn').show();
+                            gameOver = true;
+                        };
+
+                        $.connection.hub.start()
+                            .done(function () {
+                                console.log("Connected to SignalR hub");
+                                gameHub.server.joinGame(gameId, userId);
+                            })
+                            .fail(function (error) {
+                                console.error("SignalR connection failed:", error);
+                                setupComputerOpponent();
+                            });
+                    }
+                }
+
+                function setupComputerOpponent() {
+                    if (!opponentId && !isComputerOpponent) {
+                        console.log("Setting up computer opponent");
+                        isComputerOpponent = true;
+                        $('#opponent-name').html('<i class="fas fa-robot"></i> Computer');
+                        $('#game-status-message').text("Playing against computer. X goes first.");
+
+                        mySymbol = 'X';
+                        $('#my-symbol').text('X');
+                        currentPlayer = 'X';
+                        updateCurrentTurnDisplay();
+                        enableBoard(); // Enable the board for the player
+                    }
+                }
+
+                $('#play-again-btn').click(function () {
+                    resetGame();
+                });
+
+                $('#exit-game-btn').click(function () {
+                    if (!gameOver && !confirm("Are you sure you want to exit the game? This will count as a loss.")) {
+                        return;
+                    }
+
+                    if (!isComputerOpponent && $.connection && $.connection.gameHub) {
+                        try {
+                            $.connection.gameHub.server.exitGame(gameId, userId)
+                                .always(function () {
+                                    window.location.href = '@Url.Action("Index", "Games")';
+                                });
+                        } catch (e) {
+                            console.error("Error exiting game:", e);
+                            window.location.href = '@Url.Action("Index", "Games")';
+                        }
+                    } else {
+                        window.location.href = '@Url.Action("Index", "Games")';
+                    }
+                });
+
+                $('#playAgainModalBtn').click(function () {
+                    $('#playAgainModal').modal('hide');
+                    resetGame();
+                });
+
+                $('#exitModalBtn').click(function () {
+                    window.location.href = '@Url.Action("Index", "Games")';
+                });
+
+                function loadGameStats() {
+                    $.ajax({
+                        url: '/Games/GetGameStats',
+                        type: 'GET',
+                        data: { gameId: 1 },
+                        success: function (data) {
+                            if (data.success) {
+                                gameStats = data.stats;
+                                updateStatsDisplay();
+                            }
+                        },
+                        error: function (err) {
+                            console.error("Error loading game stats:", err);
+                            $('#game-stats').html("<p>Unable to load game statistics.</p>");
+                        }
+                    });
+                }
+
+                function updateStatsDisplay() {
+                    console.log("Updating stats display with:", gameStats);
+
+                    $('#game-stats').html(`
+                    <h5>Tic Tac Toe Stats</h5>
+                    <table class="table table-sm">
+                        <tr>
+                            <td>Total Games</td>
+                            <td>${gameStats.total || 0}</td>
+                        </tr>
+                        <tr>
+                            <td>Wins</td>
+                            <td>${gameStats.wins || 0}</td>
+                        </tr>
+                        <tr>
+                            <td>Losses</td>
+                            <td>${gameStats.losses || 0}</td>
+                        </tr>
+                        <tr>
+                            <td>Ties</td>
+                            <td>${gameStats.ties || 0}</td>
+                        </tr>
+                    </table>
+
+                    <h6 class="mt-3">This Session:</h6>
+                    <table class="table table-sm">
+                        <tr>
+                            <td>Games</td>
+                            <td id="session-games">0</td>
+                        </tr>
+                        <tr>
+                            <td>Wins</td>
+                            <td id="session-wins">0</td>
+                        </tr>
+                        <tr>
+                            <td>Losses</td>
+                            <td id="session-losses">0</td>
+                        </tr>
+                        <tr>
+                            <td>Ties</td>
+                            <td id="session-ties">0</td>
+                        </tr>
+                    </table>
+                `);
+
+                    if (!window.sessionStats) {
+                        window.sessionStats = { games: 0, wins: 0, losses: 0, ties: 0 };
+                    }
+
+                    $('#session-games').text(window.sessionStats.games || 0);
+                    $('#session-wins').text(window.sessionStats.wins || 0);
+                    $('#session-losses').text(window.sessionStats.losses || 0);
+                    $('#session-ties').text(window.sessionStats.ties || 0);
+
+                    console.log("Stats display updated");
+                }
+
+                function updateGameStatus(winner) {
+                    const statusMessage = $('#game-status-message');
+                    const gameResult = $('#game-result');
+                    const modalBody = $('#playAgainModalBody');
+                    let resultText = "";
+                    let alertClass = "alert-info";
+
+                    if (!window.sessionStats) {
+                        window.sessionStats = { games: 0, wins: 0, losses: 0, ties: 0 };
+                    }
+
+                    window.sessionStats.games = (window.sessionStats.games || 0) + 1;
+
+                    if (winner) {
+                        resultText = winner === mySymbol ? "You win!" : "You lose!";
+                        alertClass = winner === mySymbol ? 'alert-success' : 'alert-danger';
+
+                        gameResult.html(`
+                        <div class="alert ${alertClass}">
+                            <h4>${resultText}</h4>
+                        </div>`);
+
+                        statusMessage.text("Game over");
+                        statusMessage.removeClass('alert-info').addClass(alertClass);
+
+                        if (winner === mySymbol) {
+                            window.sessionStats.wins = (window.sessionStats.wins || 0) + 1;
+                        } else {
+                            window.sessionStats.losses = (window.sessionStats.losses || 0) + 1;
+                        }
+                    } else {
+                        resultText = "It's a draw!";
+                        alertClass = "alert-warning";
+
+                        gameResult.html(`
+                        <div class="alert alert-warning">
+                            <h4>${resultText}</h4>
+                        </div>`);
+
+                        statusMessage.text("Game over - Draw");
+                        statusMessage.removeClass('alert-info').addClass('alert-warning');
+
+                        window.sessionStats.ties = (window.sessionStats.ties || 0) + 1;
+                    }
+
+                    $('#session-games').text(window.sessionStats.games);
+                    $('#session-wins').text(window.sessionStats.wins);
+                    $('#session-losses').text(window.sessionStats.losses);
+                    $('#session-ties').text(window.sessionStats.ties);
+
+                    $('.game-cell').prop('disabled', true);
+
+                    modalBody.html(`
+                    <div class="text-center">
+                        <div class="alert ${alertClass} mb-3">
+                            <h3>${resultText}</h3>
+                        </div>
+                        <p>Would you like to play another game?</p>
+                    </div>
+                `);
+
+                    $('#playAgainModal').modal('show');
+                    console.log("Game status updated. Session stats:", window.sessionStats);
+                }
+
+                function updateCurrentTurnDisplay() {
+                    const turnDisplay = $('#current-turn');
+                    turnDisplay.text(currentPlayer);
+                    turnDisplay.removeClass('text-success text-danger');
+                    turnDisplay.addClass(currentPlayer === mySymbol ? 'text-success' : 'text-danger');
+
+                    if (currentPlayer === mySymbol) {
+                        $('#game-status-message').text("Your turn");
+                    } else {
+                        $('#game-status-message').text("Opponent's turn");
+                    }
+                }
+
+                function resetGame() {
+                    board = Array(9).fill(' ');
+                    gameOver = false;
+                    currentPlayer = 'X';
+
+                    $('.game-cell').each(function () {
+                        $(this).text('');
+                        $(this).prop('disabled', false);
+                        $(this).removeClass('x-mark o-mark winner');
+                    });
+
+                    $('#game-result').html('');
+                    $('#play-again-btn').hide();
+
+                    const statusMessage = $('#game-status-message');
+                    statusMessage.removeClass('alert-success alert-danger alert-warning').addClass('alert-info');
+
+                    if (isComputerOpponent) {
+                        statusMessage.text("New game started. X goes first.");
+                        mySymbol = 'X';
+                        $('#my-symbol').text('X');
+                        updateCurrentTurnDisplay();
+                    } else {
+                        window.location.href = '@Url.Action("Play", "Games", new { id = 1 })';
+                    }
+                }
+
+                function computerMove() {
+                    if (gameOver) return;
+
+                    let winMove = findWinningMove(currentPlayer);
+                    if (winMove !== -1) {
+                        makeComputerMove(winMove);
+                        return;
+                    }
+
+                    let blockMove = findWinningMove(mySymbol);
+                    if (blockMove !== -1) {
+                        makeComputerMove(blockMove);
+                        return;
+                    }
+
+                    if (board[4] === ' ') {
+                        makeComputerMove(4);
+                        return;
+                    }
+
+                    const corners = [0, 2, 6, 8];
+                    const availableCorners = corners.filter(i => board[i] === ' ');
+                    if (availableCorners.length > 0) {
+                        makeComputerMove(availableCorners[Math.floor(Math.random() * availableCorners.length)]);
+                        return;
+                    }
+
+                    const available = board.map((val, idx) => val === ' ' ? idx : null).filter(x => x !== null);
+                    if (available.length > 0) {
+                        makeComputerMove(available[Math.floor(Math.random() * available.length)]);
+                    }
+                }
+
+                function makeComputerMove(index) {
+                    setTimeout(function () {
+                        if (isComputerOpponent && !gameOver) {
+                            board[index] = currentPlayer;
+                            let button = $(`button[data-index="${index}"]`);
+                            button.text(currentPlayer);
+                            button.prop('disabled', true);
+                            button.addClass(currentPlayer === 'X' ? 'x-mark' : 'o-mark');
+
+                            checkWinner();
+                            if (!gameOver) {
+                                currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+                                updateCurrentTurnDisplay();
+                            }
+                        }
+                    }, 500);
+                }
+
+                function findWinningMove(player) {
+                    const wins = [
+                        [0, 1, 2], [3, 4, 5], [6, 7, 8],
+                        [0, 3, 6], [1, 4, 7], [2, 5, 8],
+                        [0, 4, 8], [2, 4, 6]
+                    ];
+
+                    for (let win of wins) {
+                        const [a, b, c] = win;
+                        if (board[a] === player && board[b] === player && board[c] === ' ') return c;
+                        if (board[a] === player && board[c] === player && board[b] === ' ') return b;
+                        if (board[b] === player && board[c] === player && board[a] === ' ') return a;
+                    }
+
+                    return -1;
+                }
+
+                function checkWinner() {
+                    const wins = [
+                        [0, 1, 2], [3, 4, 5], [6, 7, 8],
+                        [0, 3, 6], [1, 4, 7], [2, 5, 8],
+                        [0, 4, 8], [2, 4, 6]
+                    ];
+
+                    for (let win of wins) {
+                        if (board[win[0]] !== ' ' &&
+                            board[win[0]] === board[win[1]] &&
+                            board[win[1]] === board[win[2]]) {
+
+                            gameOver = true;
+
+                            win.forEach(index => {
+                                $(`button[data-index="${index}"]`).addClass('winner');
+                            });
+
+                            if (isComputerOpponent) {
+                                updateGameStatus(board[win[0]]);
+                                saveGameResult(board[win[0]]);
+                            } else {
+                                let winnerId = board[win[0]] === mySymbol ? userId : opponentId;
+                                updateGameStatus(board[win[0]]);
+                                saveGameResult(board[win[0]]);
+                                $.connection.gameHub.server.gameOver(gameId, winnerId === null ? "null" : winnerId);
+                            }
+                            $('#play-again-btn').show();
+                            return;
+                        }
+                    }
+
+                    if (!board.includes(' ')) {
+                        gameOver = true;
+
+                        if (isComputerOpponent) {
+                            updateGameStatus(null);
+                            saveGameResult(null);
+                        } else if ($.connection && $.connection.gameHub) {
+                            updateGameStatus(null);
+                            saveGameResult(null);
+                            $.connection.gameHub.server.gameOver(gameId, null)
+                                .fail(function (err) {
+                                    console.error("Error ending game:", err);
+                                });
+                        }
+
+                        $('#play-again-btn').show();
+                    }
+                }
+
+                function saveGameResult(winner) {
+                    let result;
+                    if (winner === null) {
+                        result = "tie";
+                        sessionStats.ties++;
+                    } else if (winner === mySymbol) {
+                        result = "win";
+                        sessionStats.wins++;
+                    } else {
+                        result = "loss";
+                        sessionStats.losses++;
+                    }
+
+                    sessionStats.games++;
+
+                    console.log(`Saving game result: ${result}`);
+                    console.log(`Winner symbol: '${winner}', My symbol: '${mySymbol}'`);
+                    console.log(`Updated session stats:`, sessionStats);
+
+                    $('#session-games').text(sessionStats.games);
+                    $('#session-wins').text(sessionStats.wins);
+                    $('#session-losses').text(sessionStats.losses);
+                    $('#session-ties').text(sessionStats.ties);
+
+                    var token = $('input[name="__RequestVerificationToken"]').val();
+                    if (!token) {
+                        console.error("Missing anti-forgery token!");
+                        return;
+                    }
+
+                    var formData = {
+                        gameId: gameId,
+                        result: result,
+                        isComputer: isComputerOpponent,
+                        __RequestVerificationToken: token
+                    };
+
+                    console.log("Sending form data:", formData);
+
+                    $.ajax({
+                        url: '/Games/SaveTTTResult',
+                        type: 'POST',
+                        data: formData,
+                        success: function (data) {
+                            console.log("Game result saved:", data);
+                            if (data.success) {
+                                loadGameStats();
+                            } else {
+                                console.error("Error saving result:", data.message);
+                            }
+                        },
+                        error: function (err) {
+                            console.error("Error saving game result:", err);
+                        }
+                    });
+                }
+            }
+        });
+    </script>
+
+    @if (ViewBag.GameName == "Rock-Paper-Scissors")
+    {
+        <script src="~/Scripts/rockpaperscissors.js"></script>
+    }
+}
+
+<style>
+    .game-container {
+        position: relative;
+    }
+
+    #tic-tac-toe-board {
+        position: relative;
+    }
+
+    #waiting-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.2);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 5px;
+        z-index: 100;
+    }
+
+    .game-cell.x-mark {
+        color: #007bff;
+        font-weight: bold;
+    }
+
+    .game-cell.o-mark {
+        color: #dc3545;
+        font-weight: bold;
+    }
+
+    .game-cell.winner {
+        background-color: #28a745;
+        color: white;
+    }
+
+    #play-again-btn {
+        animation: fadeIn 0.5s;
+    }
+
+.rps-game-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.game-choice-btn {
+    transition: all 0.3s ease;
+    border-radius: 15px;
+    position: relative;
+    overflow: hidden;
+    width: 150px;
+    height: 180px;
+}
+
+.game-choice-btn:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+}
+
+.active-choice {
+    box-shadow: 0 0 15px rgba(0,123,255,0.7);
+    background-color: rgba(0,123,255,0.2);
+}
+
+.stats-card {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    height: 100%;
+}
+
+.result-display {
+    min-height: 200px;
+}
+
+.custom-modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 9999;
+    justify-content: center;
+    align-items: center;
+}
+
+.custom-modal {
+    background-color: white;
+    border-radius: 6px;
+    width: 500px;
+    max-width: 90%;
+    max-height: 90%;
+    overflow: auto;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+.custom-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.custom-modal-title {
+    margin: 0;
+    font-size: 1.25rem;
+}
+
+.custom-close-button {
+    background: none;
+    border: none;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+    color: #6c757d;
+}
+
+.custom-modal-body {
+    padding: 20px;
+}
+
+.custom-modal-footer {
+    padding: 15px 20px;
+    border-top: 1px solid #e9ecef;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+@@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@@keyframes slideIn {
+    from { transform: translate(-50%, -60%); opacity: 0; }
+    to { transform: translate(-50%, -50%); opacity: 1; }
+}
+
+.custom-modal-overlay {
+    animation: fadeIn 0.3s ease-out;
+}
+
+.custom-modal {
+    animation: slideIn 0.3s ease-out;
+}
+
+.game-choice-btn {
+    background: linear-gradient(to bottom, #ffffff 0%, #f5f5f5 100%);
+    border: 2px solid #e0e0e0;
+    transition: all 0.3s;
+}
+
+.game-choice-btn:hover {
+    background: linear-gradient(to bottom, #f8f9fa 0%, #e9ecef 100%);
+    border-color: #007bff;
+}
+
+.game-choice-btn i {
+    transition: transform 0.3s;
+}
+
+.game-choice-btn:hover i {
+    transform: scale(1.1);
+}
+</style>
+
+@Html.AntiForgeryToken()

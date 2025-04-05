@@ -1,0 +1,122 @@
+﻿@model MatchMate.Models.AdminDashboardViewModel
+@{
+    ViewBag.Title = "Admin Dashboard";
+}
+
+<div class="row">
+    <div class="col-12">
+        <h2 class="mb-4"><i class="fas fa-tachometer-alt me-2"></i>@ViewBag.Title</h2>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="col-md-6 col-lg-3 mb-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Total Users</h5>
+                <h3>@Model.TotalUsers</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-3 mb-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Active Matches</h5>
+                <h3>@Model.ActiveMatches</h3>
+            </div>
+        </div>
+    </div>
+
+    <!-- Users Table -->
+    <div class="col-12 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5>Users</h5>
+                <a href="@Url.Action("AddUser")" class="btn btn-primary btn-sm float-end">
+                    <i class="fas fa-plus me-2"></i>Add User
+                </a>
+            </div>
+            <div class="card-body">
+                @using (Html.BeginForm("BulkDelete", "Admin", FormMethod.Post))
+                {
+                    @Html.AntiForgeryToken()
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th><input type="checkbox" id="selectAll" /></th>
+                                <th>Username</th>
+                                <th>Email</th>
+                                <th>Last Login</th>
+                                <th>Games Played</th>
+                                <th>Wins</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var user in Model.Users)
+                            {
+                                <tr>
+                                    <td><input type="checkbox" name="selectedUsers" value="@user.Id" /></td>
+                                    <td>@user.Username</td>
+                                    <td>@user.Email</td>
+                                    <td>@user.LastLogin.ToString("MM/dd/yyyy HH:mm")</td>
+                                    <td>@user.TotalGamesPlayed</td>
+                                    <td>@user.TotalWins</td>
+                                    <td>
+                                        <a href="@Url.Action("UserStats", new { id = user.Id })" class="btn btn-info btn-sm">
+                                            <i class="fas fa-chart-bar"></i> Stats
+                                        </a>
+                                        <a href="@Url.Action("ResetUserPassword", new { id = user.Id })" class="btn btn-warning btn-sm">
+                                            <i class="fas fa-key"></i> Reset
+                                        </a>
+                                        <a href="@Url.Action("DeleteUser", new { id = user.Id })" class="btn btn-danger btn-sm"
+                                           onclick="return confirm('Are you sure you want to delete @user.Username?');">
+                                            <i class="fas fa-trash"></i> Delete
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                    <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete selected users?');">
+                        <i class="fas fa-trash-alt me-2"></i>Bulk Delete
+                    </button>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Games List -->
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5>Available Games</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    @foreach (var game in Model.Games)
+                    {
+                        <div class="col-md-4 mb-3">
+                            <div class="card game-card">
+                                <div class="card-body">
+                                    <h5 class="card-title">@game.GameName</h5>
+                                    <p class="card-text">@game.Description</p>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.getElementById('selectAll').addEventListener('change', function () {
+            var checkboxes = document.getElementsByName('selectedUsers');
+            for (var i = 0; i < checkboxes.length; i++) {
+                checkboxes[i].checked = this.checked;
+            }
+        });
+    </script>
+}

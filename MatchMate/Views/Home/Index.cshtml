@@ -1,0 +1,506 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "MatchMate";
+}
+
+<div class="hero-section text-center py-5 mb-5 position-relative">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <h1 class="display-4 fw-bold mb-3">
+                Welcome to <span style="color: #ff4d6d;">MatchMate</span>!
+            </h1>
+            <p class="lead mb-4">Join thousands of players and challenge opponents in real-time multiplayer games.</p>
+
+            @if (User.Identity.IsAuthenticated)
+            {
+                <div class="welcome-user mb-4">
+                    <div class="p-3 bg-white rounded-pill shadow-sm d-inline-block">
+                        <i class="fas fa-user-circle me-2 text-primary fa-lg"></i>
+                        <span class="fw-bold">Welcome back, @User.Identity.Name!</span>
+                    </div>
+                </div>
+                <a href="@Url.Action("Index", "Games")" class="btn btn-primary btn-lg px-4 rounded-pill">
+                    <i class="fas fa-gamepad me-2"></i> Play Now
+                </a>
+            }
+            else
+            {
+                <div class="d-flex justify-content-center gap-3">
+                    <a href="@Url.Action("Login", "Account")" class="btn btn-primary btn-lg px-4 rounded-pill">
+                        <i class="fas fa-sign-in-alt me-2"></i> Log in
+                    </a>
+                    <a href="@Url.Action("Register", "Account")" class="btn btn-outline-primary btn-lg px-4 rounded-pill">
+                        <i class="fas fa-user-plus me-2"></i> Register
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="position-absolute top-0 start-0 w-100 h-100 z-n1 overflow-hidden">
+        <div class="position-absolute top-0 end-0 bg-primary opacity-10 rounded-circle"
+             style="width: 300px; height: 300px; transform: translate(30%, -30%);"></div>
+        <div class="position-absolute bottom-0 start-0 bg-info opacity-10 rounded-circle"
+             style="width: 400px; height: 400px; transform: translate(-40%, 40%);"></div>
+    </div>
+</div>
+
+@if (User.Identity.IsAuthenticated)
+{
+    <div class="featured-games mb-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="mb-0">Featured Games</h2>
+            <a href="@Url.Action("Index", "Games")" class="btn btn-outline-primary">View All</a>
+        </div>
+        <div class="row g-4">
+            <!-- Tic Tac Toe Card -->
+            <div class="col-md-6 col-lg-4">
+                <div class="card game-card h-100 shadow-sm animate__animated animate__fadeIn">
+                    <div class="position-relative">
+                        <div class="game-card-img bg-gradient-primary text-white d-flex align-items-center justify-content-center">
+                            <i class="fas fa-th fa-4x"></i>
+                        </div>
+                        <span class="badge-players-online">
+                            <i class="fas fa-users me-1"></i> 24 online
+                        </span>
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">Tic Tac Toe</h5>
+                        <p class="card-text">Challenge other players to the classic game of X's and O's.</p>
+
+                        <div class="game-features mb-3">
+                            <div class="d-flex flex-wrap gap-2">
+                                <span class="badge rounded-pill bg-light text-dark"><i class="fas fa-users me-1"></i> 2 Players</span>
+                                <span class="badge rounded-pill bg-light text-dark"><i class="fas fa-brain me-1"></i> Strategy</span>
+                                <span class="badge rounded-pill bg-light text-dark"><i class="fas fa-clock me-1"></i> Quick Match</span>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="badge bg-success rounded-pill px-3">Multiplayer</span>
+                            <a href="@Url.Action("Play", "Games", new { id = 1 })" class="btn btn-sm btn-primary">
+                                <i class="fas fa-play me-1"></i> Play Now
+                            </a>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-transparent">
+                        <small class="text-muted">
+                            <i class="fas fa-trophy text-warning me-1"></i> Your best: 70% win rate
+                        </small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rock Paper Scissors Card -->
+            <div class="col-md-6 col-lg-4">
+                <div class="card game-card h-100 shadow-sm animate__animated animate__fadeIn animation-delay-1">
+                    <div class="position-relative">
+                        <div class="game-card-img bg-gradient-secondary text-white d-flex align-items-center justify-content-center">
+                            <i class="fas fa-hand-rock fa-4x"></i>
+                        </div>
+                        <span class="badge-players-online">
+                            <i class="fas fa-robot me-1"></i> AI Opponent
+                        </span>
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">Rock Paper Scissors</h5>
+                        <p class="card-text">Test your luck and strategy against AI in this classic game.</p>
+
+                        <div class="game-features mb-3">
+                            <div class="d-flex flex-wrap gap-2">
+                                <span class="badge rounded-pill bg-light text-dark"><i class="fas fa-robot me-1"></i> vs AI</span>
+                                <span class="badge rounded-pill bg-light text-dark"><i class="fas fa-random me-1"></i> Luck</span>
+                                <span class="badge rounded-pill bg-light text-dark"><i class="fas fa-bolt me-1"></i> Fast Paced</span>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="badge bg-info rounded-pill px-3">Single Player</span>
+                            <a href="@Url.Action("Play", "Games", new { id = 2 })" class="btn btn-sm btn-primary">
+                                <i class="fas fa-play me-1"></i> Play Now
+                            </a>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-transparent">
+                        <small class="text-muted">
+                            <i class="fas fa-trophy text-warning me-1"></i> Your best: 12 wins streak
+                        </small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Coming Soon Card -->
+            <div class="col-md-6 col-lg-4">
+                <div class="card game-card h-100 shadow-sm animate__animated animate__fadeIn animation-delay-2">
+                    <div class="position-relative">
+                        <div class="game-card-img bg-gradient-warning text-dark d-flex align-items-center justify-content-center">
+                            <i class="fas fa-plus fa-4x"></i>
+                        </div>
+                        <span class="badge-players-online bg-warning">
+                            <i class="fas fa-clock me-1"></i> Coming Soon
+                        </span>
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">More Games Coming</h5>
+                        <p class="card-text">We're working on adding more exciting games to our platform.</p>
+
+                        <div class="game-features mb-3">
+                            <div class="d-flex flex-wrap gap-2">
+                                <span class="badge rounded-pill bg-light text-dark"><i class="fas fa-dice me-1"></i> More Games</span>
+                                <span class="badge rounded-pill bg-light text-dark"><i class="fas fa-calendar me-1"></i> Q2 2025</span>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="badge bg-secondary rounded-pill px-3">In Development</span>
+                            <button disabled class="btn btn-sm btn-secondary">
+                                <i class="fas fa-hourglass-half me-1"></i> Stay Tuned
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-transparent">
+                        <small class="text-muted">
+                            <i class="fas fa-calendar me-1"></i> Expected: Q2 2025
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="stats-section mb-5">
+        <div class="card">
+            <div class="card-body py-4">
+                <div class="row text-center">
+                    <div class="col-md-3 mb-3 mb-md-0">
+                        <div class="d-flex align-items-center justify-content-center">
+                            <i class="fas fa-trophy text-primary me-2 fa-2x"></i>
+                            <div class="text-start">
+                                <h3 class="mb-0">250+</h3>
+                                <p class="text-muted mb-0">Matches Played</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3 mb-md-0">
+                        <div class="d-flex align-items-center justify-content-center">
+                            <i class="fas fa-users text-info me-2 fa-2x"></i>
+                            <div class="text-start">
+                                <h3 class="mb-0">42</h3>
+                                <p class="text-muted mb-0">Players Online</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3 mb-md-0">
+                        <div class="d-flex align-items-center justify-content-center">
+                            <i class="fas fa-gamepad text-success me-2 fa-2x"></i>
+                            <div class="text-start">
+                                <h3 class="mb-0">2</h3>
+                                <p class="text-muted mb-0">Available Games</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="d-flex align-items-center justify-content-center">
+                            <i class="fas fa-clock text-warning me-2 fa-2x"></i>
+                            <div class="text-start">
+                                <h3 class="mb-0">3254</h3>
+                                <p class="text-muted mb-0">Minutes Played</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="row mb-5 g-4">
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h3>Why Join MatchMate?</h3>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item d-flex">
+                            <i class="fas fa-check-circle text-success me-3 mt-1"></i>
+                            <div>
+                                <strong>Challenging Gameplay</strong>
+                                <p class="mb-0 text-muted">Test your skills against other players in real-time</p>
+                            </div>
+                        </li>
+                        <li class="list-group-item d-flex">
+                            <i class="fas fa-check-circle text-success me-3 mt-1"></i>
+                            <div>
+                                <strong>Track Your Progress</strong>
+                                <p class="mb-0 text-muted">Detailed statistics to measure your improvement</p>
+                            </div>
+                        </li>
+                        <li class="list-group-item d-flex">
+                            <i class="fas fa-check-circle text-success me-3 mt-1"></i>
+                            <div>
+                                <strong>Growing Game Library</strong>
+                                <p class="mb-0 text-muted">New games added regularly</p>
+                            </div>
+                        </li>
+                        <li class="list-group-item d-flex">
+                            <i class="fas fa-check-circle text-success me-3 mt-1"></i>
+                            <div>
+                                <strong>Free to Play</strong>
+                                <p class="mb-0 text-muted">All games available at no cost</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h3>Our Games</h3>
+                    <div class="d-flex mb-3 align-items-center">
+                        <img src="https://via.placeholder.com/80?text=TTT" class="rounded me-3" alt="Tic Tac Toe">
+                        <div>
+                            <h5 class="mb-1">Tic Tac Toe</h5>
+                            <p class="text-muted mb-0">Challenge opponents to the classic game of X's and O's.</p>
+                            <div class="mt-2">
+                                <span class="badge bg-primary me-1">Multiplayer</span>
+                                <span class="badge bg-secondary">Strategy</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex mb-3 align-items-center">
+                        <img src="https://via.placeholder.com/80?text=RPS" class="rounded me-3" alt="Rock Paper Scissors">
+                        <div>
+                            <h5 class="mb-1">Rock Paper Scissors</h5>
+                            <p class="text-muted mb-0">Test your luck against the computer in this classic game.</p>
+                            <div class="mt-2">
+                                <span class="badge bg-info me-1">Single Player</span>
+                                <span class="badge bg-secondary">Quick Play</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-center mt-4">
+                        <a href="@Url.Action("Register", "Account")" class="btn btn-primary">
+                            <i class="fas fa-user-plus me-2"></i> Register to Play
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="testimonials-section mb-5">
+        <h3 class="text-center mb-4">What Players Say</h3>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="d-flex mb-3">
+                            <img src="https://via.placeholder.com/50" class="rounded-circle me-3" alt="User">
+                            <div>
+                                <h5 class="mb-1">John D.</h5>
+                                <div class="text-warning">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="card-text">"I love the competitive aspect of MatchMate. The statistics tracking really helps me see my improvement."</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="d-flex mb-3">
+                            <img src="https://via.placeholder.com/50" class="rounded-circle me-3" alt="User">
+                            <div>
+                                <h5 class="mb-1">Sarah M.</h5>
+                                <div class="text-warning">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="far fa-star"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="card-text">"The matchmaking is great! I always find challenging opponents quickly without long wait times."</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="d-flex mb-3">
+                            <img src="https://via.placeholder.com/50" class="rounded-circle me-3" alt="User">
+                            <div>
+                                <h5 class="mb-1">Mike T.</h5>
+                                <div class="text-warning">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star-half-alt"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="card-text">"Simple but addictive games. I love taking a quick break with Rock Paper Scissors between work tasks."</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<div class="cta-section p-4 p-md-5 text-center bg-light rounded-3 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <h2>Ready to Play?</h2>
+            <p class="lead mb-4">Join MatchMate today and start challenging opponents worldwide.</p>
+            @if (User.Identity.IsAuthenticated)
+            {
+                <a href="@Url.Action("Index", "Games")" class="btn btn-lg btn-primary px-4 rounded-pill">
+                    <i class="fas fa-gamepad me-2"></i> Browse Games
+                </a>
+            }
+            else
+            {
+                <a href="@Url.Action("Register", "Account")" class="btn btn-lg btn-primary px-4 rounded-pill">
+                    <i class="fas fa-user-plus me-2"></i> Sign Up Now
+                </a>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(function () {
+            $('.game-card').each(function (i) {
+                var card = $(this);
+                setTimeout(function () {
+                    card.addClass('animate__animated animate__fadeIn');
+                }, i * 150);
+            });
+
+            loadPlayerSummary();
+
+            function loadPlayerSummary() {
+                let totalGames = 0;
+                let totalWins = 0;
+
+                $.ajax({
+                    url: '/Games/GetGameStats',
+                    type: 'GET',
+                    data: {
+                        gameId: 1,
+                        _: new Date().getTime()
+                    },
+                    success: function (data) {
+                        if (data.success) {
+                            totalGames += data.stats.total || 0;
+                            totalWins += data.stats.wins || 0;
+                            updateSummary();
+                        }
+                    }
+                });
+
+                $.ajax({
+                    url: '/Games/GetGameStats',
+                    type: 'GET',
+                    data: {
+                        gameId: 2,
+                        _: new Date().getTime()
+                    },
+                    success: function (data) {
+                        if (data.success) {
+                            totalGames += data.stats.total || 0;
+                            totalWins += data.stats.wins || 0;
+                            updateSummary();
+                        }
+                    }
+                });
+
+                function updateSummary() {
+                    $('#summary-total-games').text(totalGames);
+                    $('#summary-total-wins').text(totalWins);
+                    const winRate = totalGames > 0 ? Math.round((totalWins / totalGames) * 100) : 0;
+                    $('#summary-win-rate').text(winRate + '%');
+                }
+            }
+        });
+    </script>
+
+    <style>
+        .bg-gradient-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+        }
+
+        .bg-gradient-secondary {
+            background: linear-gradient(135deg, #6c757d, #495057);
+        }
+
+        .bg-gradient-warning {
+            background: linear-gradient(135deg, #ffc107, #fd7e14);
+        }
+
+        .bg-gradient-info {
+            background: linear-gradient(135deg, #17a2b8, #0097a7);
+        }
+
+        .game-card {
+            transition: all 0.3s ease;
+            overflow: hidden;
+            border-radius: 12px;
+        }
+
+            .game-card:hover {
+                transform: translateY(-10px);
+                box-shadow: 0 15px 30px rgba(0,0,0,0.1) !important;
+            }
+
+        .game-card-img {
+            height: 180px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .badge-players-online {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background-color: rgba(0,0,0,0.6);
+            color: white;
+            border-radius: 20px;
+            padding: 5px 15px;
+            font-size: 0.8rem;
+            z-index: 10;
+        }
+
+        .coming-soon-card {
+            border: 2px dashed rgba(0,0,0,0.1);
+        }
+
+        .stats-icon {
+            width: 65px;
+            height: 65px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .animate__fadeIn {
+            animation-duration: 0.8s;
+        }
+    </style>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+}

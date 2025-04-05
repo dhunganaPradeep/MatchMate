@@ -1,0 +1,23 @@
+﻿@{
+    ViewBag.Title = "Log Off";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-body text-center">
+                    <h2 class="card-title mb-4">Confirm Log Off</h2>
+                    <p>Are you sure you want to log off?</p>
+
+                    @using (Html.BeginForm("LogOff", "Account", FormMethod.Post))
+                    {
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-primary">Yes, Log Off</button>
+                        @Html.ActionLink("Cancel", "Index", "Home", null, new { @class = "btn btn-secondary ms-2" })
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

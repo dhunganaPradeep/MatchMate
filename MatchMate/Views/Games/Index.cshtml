@@ -1,0 +1,348 @@
+﻿@model List<MatchMate.Models.Game>
+
+@{
+    ViewBag.Title = "Choose Your Game";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="games-container my-4">
+    <div class="page-header text-center mb-5 position-relative">
+        <h1 class="display-4 fw-bold mb-3">Game Collection</h1>
+        <p class="lead text-muted">Select a game to start playing</p>
+
+        <div class="position-absolute top-0 end-0 bg-primary opacity-10 rounded-circle d-none d-lg-block"
+             style="width: 200px; height: 200px; transform: translate(30%, -30%); z-index: -1;"></div>
+        <div class="position-absolute bottom-0 start-0 bg-info opacity-10 rounded-circle d-none d-lg-block"
+             style="width: 180px; height: 180px; transform: translate(-40%, 40%); z-index: -1;"></div>
+    </div>
+
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        @foreach (var game in Model)
+        {
+            <div class="col animate__animated animate__fadeIn">
+                <div class="card game-card h-100 shadow-sm">
+                    <div class="position-relative">
+                        @if (game.GameName == "Tic-Tac-Toe")
+                        {
+                            <div class="game-card-img bg-gradient-primary text-white d-flex align-items-center justify-content-center">
+                                <i class="fas fa-th fa-4x"></i>
+                            </div>
+                            <span class="badge-players-online">
+                                <i class="fas fa-users me-1"></i> 24 online
+                            </span>
+                        }
+                        else if (game.GameName == "Rock-Paper-Scissors")
+                        {
+                            <div class="game-card-img bg-gradient-secondary text-white d-flex align-items-center justify-content-center">
+                                <i class="fas fa-hand-rock fa-4x"></i>
+                            </div>
+                            <span class="badge-players-online">
+                                <i class="fas fa-robot me-1"></i> AI Opponent
+                            </span>
+                        }
+                        else
+                        {
+                            <div class="game-card-img bg-gradient-info text-white d-flex align-items-center justify-content-center">
+                                <i class="fas fa-gamepad fa-4x"></i>
+                            </div>
+                        }
+                    </div>
+
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h5 class="card-title">@game.GameName</h5>
+                            @if (game.GameName == "Tic-Tac-Toe")
+                            {
+                                <span class="badge bg-success">Multiplayer</span>
+                            }
+                            else if (game.GameName == "Rock-Paper-Scissors")
+                            {
+                                <span class="badge bg-info">Single Player</span>
+                            }
+                        </div>
+
+                        <p class="card-text">@(game.Description ?? "Challenge yourself with this exciting game!")</p>
+
+                        <div class="game-features mb-3">
+                            <div class="d-flex flex-wrap gap-2">
+                                @if (game.GameName == "Tic-Tac-Toe")
+                                {
+                                    <span class="badge rounded-pill bg-light text-dark"><i class="fas fa-users me-1"></i> 2 Players</span>
+                                    <span class="badge rounded-pill bg-light text-dark"><i class="fas fa-brain me-1"></i> Strategy</span>
+                                    <span class="badge rounded-pill bg-light text-dark"><i class="fas fa-clock me-1"></i> Quick Match</span>
+                                }
+                                else if (game.GameName == "Rock-Paper-Scissors")
+                                {
+                                    <span class="badge rounded-pill bg-light text-dark"><i class="fas fa-robot me-1"></i> vs AI</span>
+                                    <span class="badge rounded-pill bg-light text-dark"><i class="fas fa-random me-1"></i> Luck</span>
+                                    <span class="badge rounded-pill bg-light text-dark"><i class="fas fa-bolt me-1"></i> Fast Paced</span>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="difficulty-meter mb-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted">Difficulty</small>
+                                <div>
+                                    @if (game.GameName == "Tic-Tac-Toe")
+                                    {
+                                        <i class="fas fa-star text-warning"></i>
+                                        <i class="fas fa-star text-warning"></i>
+                                        <i class="far fa-star text-warning"></i>
+                                        <i class="far fa-star text-warning"></i>
+                                        <i class="far fa-star text-warning"></i>
+                                    }
+                                    else if (game.GameName == "Rock-Paper-Scissors")
+                                    {
+                                        <i class="fas fa-star text-warning"></i>
+                                        <i class="far fa-star text-warning"></i>
+                                        <i class="far fa-star text-warning"></i>
+                                        <i class="far fa-star text-warning"></i>
+                                        <i class="far fa-star text-warning"></i>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-footer bg-white border-0 pb-4">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="game-stats">
+                                <small class="text-muted">
+                                    <i class="fas fa-trophy text-warning me-1"></i> Your best:
+                                    @if (game.GameName == "Tic-Tac-Toe")
+                                    {
+                                        <span>70% win rate</span>
+                                    }
+                                    else if (game.GameName == "Rock-Paper-Scissors")
+                                    {
+                                        <span>12 wins streak</span>
+                                    }
+                                    else
+                                    {
+                                        <span>Not played yet</span>
+                                    }
+                                </small>
+                            </div>
+                            <a href="@Url.Action("Play", "Games", new { id = game.GameId })" class="btn btn-primary">
+                                <i class="fas fa-play me-2"></i> Play Now
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <!-- Coming Soon Card -->
+        <div class="col animate__animated animate__fadeIn">
+            <div class="card game-card h-100 shadow-sm coming-soon-card">
+                <div class="position-relative">
+                    <div class="game-card-img bg-gradient-warning text-dark d-flex align-items-center justify-content-center">
+                        <i class="fas fa-plus fa-4x"></i>
+                    </div>
+                    <span class="badge-players-online bg-warning text-dark">
+                        <i class="fas fa-clock me-1"></i> Coming Soon
+                    </span>
+                </div>
+
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <h5 class="card-title">More Games Coming!</h5>
+                        <span class="badge bg-secondary">In Development</span>
+                    </div>
+
+                    <p class="card-text">We're working on adding more exciting games to our collection. Stay tuned!</p>
+
+                    <div class="game-features mb-3">
+                        <div class="d-flex flex-wrap gap-2">
+                            <span class="badge rounded-pill bg-light text-dark"><i class="fas fa-dice me-1"></i> More Games</span>
+                            <span class="badge rounded-pill bg-light text-dark"><i class="fas fa-calendar me-1"></i> Q2 2025</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-footer bg-white border-0 pb-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="game-stats">
+                            <small class="text-muted">
+                                <i class="fas fa-hourglass-half me-1"></i> In development
+                            </small>
+                        </div>
+                        <button disabled class="btn btn-secondary">
+                            <i class="fas fa-hourglass-half me-2"></i> Coming Soon
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Player Stats Summary -->
+    <div class="card mt-5 shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0"><i class="fas fa-chart-line me-2"></i>Your Gaming Summary</h4>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4 mb-4 mb-md-0">
+                    <div class="d-flex align-items-center">
+                        <div class="stats-icon bg-light p-3 rounded me-3">
+                            <i class="fas fa-gamepad fa-2x text-primary"></i>
+                        </div>
+                        <div>
+                            <h2 class="mb-0 fw-bold" id="summary-total-games">--</h2>
+                            <p class="text-muted mb-0">Total Games</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4 mb-md-0">
+                    <div class="d-flex align-items-center">
+                        <div class="stats-icon bg-light p-3 rounded me-3">
+                            <i class="fas fa-trophy fa-2x text-success"></i>
+                        </div>
+                        <div>
+                            <h2 class="mb-0 fw-bold" id="summary-total-wins">--</h2>
+                            <p class="text-muted mb-0">Total Wins</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="d-flex align-items-center">
+                        <div class="stats-icon bg-light p-3 rounded me-3">
+                            <i class="fas fa-percentage fa-2x text-info"></i>
+                        </div>
+                        <div>
+                            <h2 class="mb-0 fw-bold" id="summary-win-rate">--%</h2>
+                            <p class="text-muted mb-0">Win Rate</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(function () {
+            $('.game-card').each(function(i) {
+                var card = $(this);
+                setTimeout(function() {
+                    card.addClass('animate__animated animate__fadeIn');
+                }, i * 150);
+            });
+
+            loadPlayerSummary();
+
+            function loadPlayerSummary() {
+                let totalGames = 0;
+                let totalWins = 0;
+
+                $.ajax({
+                    url: '/Games/GetGameStats',
+                    type: 'GET',
+                    data: {
+                        gameId: 1,
+                        _: new Date().getTime()
+                    },
+                    success: function (data) {
+                        if (data.success) {
+                            totalGames += data.stats.total || 0;
+                            totalWins += data.stats.wins || 0;
+                            updateSummary();
+                        }
+                    }
+                });
+
+                $.ajax({
+                    url: '/Games/GetGameStats',
+                    type: 'GET',
+                    data: {
+                        gameId: 2,
+                        _: new Date().getTime()
+                    },
+                    success: function (data) {
+                        if (data.success) {
+                            totalGames += data.stats.total || 0;
+                            totalWins += data.stats.wins || 0;
+                            updateSummary();
+                        }
+                    }
+                });
+
+                function updateSummary() {
+                    $('#summary-total-games').text(totalGames);
+                    $('#summary-total-wins').text(totalWins);
+                    const winRate = totalGames > 0 ? Math.round((totalWins / totalGames) * 100) : 0;
+                    $('#summary-win-rate').text(winRate + '%');
+                }
+            }
+        });
+    </script>
+
+    <style>
+        .bg-gradient-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+        }
+
+        .bg-gradient-secondary {
+            background: linear-gradient(135deg, #6c757d, #495057);
+        }
+
+        .bg-gradient-warning {
+            background: linear-gradient(135deg, #ffc107, #fd7e14);
+        }
+
+        .bg-gradient-info {
+            background: linear-gradient(135deg, #17a2b8, #0097a7);
+        }
+
+        .game-card {
+            transition: all 0.3s ease;
+            overflow: hidden;
+            border-radius: 12px;
+        }
+
+            .game-card:hover {
+                transform: translateY(-10px);
+                box-shadow: 0 15px 30px rgba(0,0,0,0.1) !important;
+            }
+
+        .game-card-img {
+            height: 180px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .badge-players-online {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background-color: rgba(0,0,0,0.6);
+            color: white;
+            border-radius: 20px;
+            padding: 5px 15px;
+            font-size: 0.8rem;
+            z-index: 10;
+        }
+
+        .coming-soon-card {
+            border: 2px dashed rgba(0,0,0,0.1);
+        }
+
+        .stats-icon {
+            width: 65px;
+            height: 65px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .animate__fadeIn {
+            animation-duration: 0.8s;
+        }
+    </style>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+}

@@ -1,0 +1,182 @@
+﻿@{
+    ViewBag.Title = "Game Statistics";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-4">
+    <h2>Your Game Statistics</h2>
+
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Tic Tac Toe</h4>
+                </div>
+                <div class="card-body">
+                    @if (ViewBag.TicTacToe != null)
+                    {
+                        <div class="overall-stats mb-4">
+                            <h5>Overall Statistics</h5>
+                            <table class="table table-striped">
+                                <tr>
+                                    <td>Total Games Played</td>
+                                    <td>@ViewBag.TicTacToe.TotalGames</td>
+                                </tr>
+                                <tr>
+                                    <td>Total Wins</td>
+                                    <td>@ViewBag.TicTacToe.Wins</td>
+                                </tr>
+                                <tr>
+                                    <td>Total Losses</td>
+                                    <td>@ViewBag.TicTacToe.Losses</td>
+                                </tr>
+                                <tr>
+                                    <td>Total Ties</td>
+                                    <td>@ViewBag.TicTacToe.Ties</td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5>With Computer</h5>
+                                <table class="table table-sm">
+                                    <tr>
+                                        <td>Games</td>
+                                        <td>@ViewBag.TicTacToe.ComputerGames</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Wins</td>
+                                        <td>@ViewBag.TicTacToe.ComputerWins</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Losses</td>
+                                        <td>@ViewBag.TicTacToe.ComputerLosses</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Ties</td>
+                                        <td>@ViewBag.TicTacToe.ComputerTies</td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="col-md-6">
+                                <h5>With Users</h5>
+                                <table class="table table-sm">
+                                    <tr>
+                                        <td>Games</td>
+                                        <td>@ViewBag.TicTacToe.UserGames</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Wins</td>
+                                        <td>@ViewBag.TicTacToe.UserWins</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Losses</td>
+                                        <td>@ViewBag.TicTacToe.UserLosses</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Ties</td>
+                                        <td>@ViewBag.TicTacToe.UserTies</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <p>No statistics available. Start playing to see your stats!</p>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0">Rock Paper Scissors</h4>
+                </div>
+                <div class="card-body">
+                    @if (ViewBag.RockPaperScissors != null)
+                    {
+                        <div class="overall-stats mb-4">
+                            <h5>Overall Statistics</h5>
+                            <table class="table table-striped">
+                                <tr>
+                                    <td>Total Games Played</td>
+                                    <td>@ViewBag.RockPaperScissors.TotalGames</td>
+                                </tr>
+                                <tr>
+                                    <td>Total Wins</td>
+                                    <td>@ViewBag.RockPaperScissors.Wins</td>
+                                </tr>
+                                <tr>
+                                    <td>Total Losses</td>
+                                    <td>@ViewBag.RockPaperScissors.Losses</td>
+                                </tr>
+                                <tr>
+                                    <td>Total Ties</td>
+                                    <td>@ViewBag.RockPaperScissors.Ties</td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5>With Computer</h5>
+                                <table class="table table-sm">
+                                    <tr>
+                                        <td>Games</td>
+                                        <td>@ViewBag.RockPaperScissors.ComputerGames</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Wins</td>
+                                        <td>@ViewBag.RockPaperScissors.ComputerWins</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Losses</td>
+                                        <td>@ViewBag.RockPaperScissors.ComputerLosses</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Ties</td>
+                                        <td>@ViewBag.RockPaperScissors.ComputerTies</td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="col-md-6">
+                                <h5>With Users</h5>
+                                <table class="table table-sm">
+                                    <tr>
+                                        <td>Games</td>
+                                        <td>@ViewBag.RockPaperScissors.UserGames</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Wins</td>
+                                        <td>@ViewBag.RockPaperScissors.UserWins</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Losses</td>
+                                        <td>@ViewBag.RockPaperScissors.UserLosses</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Ties</td>
+                                        <td>@ViewBag.RockPaperScissors.UserTies</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <p>No statistics available. Start playing to see your stats!</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-12">
+            <a href="@Url.Action("Index", "Games")" class="btn btn-primary">Return to Games</a>
+        </div>
+    </div>
+</div>
